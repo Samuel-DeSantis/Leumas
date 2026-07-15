@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Electrical hierarchy &middot; {{ project.name }}{% endblock %}
+{% block content %}
+<div class="flex items-start justify-between mb-6">
+  <div>
+    <h1 class="font-display text-2xl font-semibold text-pvink">Electrical hierarchy</h1>
+    <p class="text-sm text-pvslate mt-1">{{ project.name }}</p>
+  </div>
+  <a href="?validate=1"
+     class="rounded-md bg-pvaccent px-4 py-2 text-sm font-semibold text-[#4A360A] hover:brightness-95">
+    Validate design
+  </a>
+</div>
+
+{% if validation_result is not None %}
+<div class="mb-8 rounded-lg border {% if validation_result.is_valid %}border-green-200 bg-green-50{% else %}border-[#EAC9BE] bg-[#FBEAE6]{% endif %} px-5 py-4">
+  <div class="font-display font-semibold {% if validation_result.is_valid %}text-green-800{% else %}text-[#B3402A]{% endif %} mb-2">
+    {% if validation_result.is_valid %}
+      No blocking issues found{% if validation_result.warnings %} ({{ validation_result.warnings|length }} warning{{ validation_result.warnings|length|pluralize }}){% endif %}.
+    {% else %}
+      {{ validation_result.errors|length }} error{{ validation_result.errors|length|pluralize }} found.
+    {% endif %}
+  </div>
+  {% if validation_result.issues %}
+  <ul class="space-y-1 text-sm">
+    {% for issue in validation_result.issues %}
+    <li class="flex gap-2">
+      <span class="pv-badge {% if issue.severity == 'error' %}bg-[#FBEAE6] text-[#B3402A]{% else %}bg-[#FBF1DC] text-[#93650F]{% endif %} shrink-0">{{ issue.severity }}</span>
+      <span>{{ issue.message }}{% if issue.object_ref %} <span class="text-pvslate">&mdash; {{ issue.object_ref }}</span>{% endif %}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
+{% endif %}
+
+<div class="flex items-center justify-between mb-3">
+  <h2 class="font-display text-lg font-semibold text-pvink">Points of interconnection</h2>
+  {% if membership.can_edit %}
+  <a href="{% url 'electrical:poi_create' org_slug=organization.slug project_id=project.id %}" class="text-sm font-medium text-pvblue hover:underline">+ Add POI</a>
+  {% endif %}
+</div>
+{% if pois %}
+<ul class="mb-8 space-y-2">
+  {% for poi in pois %}
+  <li class="flex items-center justify-between rounded-md border border-pvline bg-white px-3 py-2 text-sm">
+    <span>{{ poi.name }}{% if poi.voltage_kv %} <span class="font-mono-data text-pvslate">{{ poi.voltage_kv }} kV</span>{% endif %}</span>
+    {% if membership.can_edit %}
+    <form method="post" action="{% url 'electrical:poi_delete' org_slug=organization.slug project_id=project.id poi_id=poi.id %}">
+      {% csrf_token %}
+      <button type="submit" class="text-xs font-medium text-[#B3402A] hover:underline">Delete</button>
+    </form>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<div class="rounded-md border border-dashed border-pvline px-3 py-4 text-center text-xs text-pvslate mb-8">None yet.</div>
+{% endif %}
+
+<h2 class="font-display text-lg font-semibold text-pvink mb-3">Sites</h2>
+{% if sites %}
+<div class="space-y-6 pv-tree">
+  {% for site in sites %}
+  <div class="rounded-lg border border-pvline bg-white p-5">
+    <a href="{% url 'electrical:site_detail' org_slug=organization.slug project_id=project.id site_id=site.id %}"
+       class="font-display font-semibold text-pvink hover:underline">{{ site.name }}</a>
+
+    {% for pcs in site.pcs_instances.all %}
+    <div class="pv-tree-node mt-3 pb-1">
+      <a href="{% url 'electrical:pcs_instance_detail' org_slug=organization.slug project_id=project.id site_id=site.id pcs_id=pcs.id %}"
+         class="font-mono-data text-sm font-medium text-pvink hover:underline">{{ pcs.identifier }}</a>
+      <span class="text-xs text-pvslate ml-2">{{ pcs.pcs_type }}</span>
+
+      {% for dc in pcs.dc_circuits.all %}
+      <div class="pv-tree-node mt-2 pb-1">
+        <a href="{% url 'electrical:dc_circuit_detail' org_slug=organization.slug project_id=project.id site_id=site.id pcs_id=pcs.id dc_id=dc.id %}"
+           class="font-mono-data text-sm text-pvslate hover:underline hover:text-pvink">{{ dc.identifier }}</a>
+
+        {% for string in dc.strings.all %}
+        <div class="pv-tree-node mt-1.5 pb-1 text-xs">
+          <span class="font-mono-data text-pvink">{{ string.identifier }}</span>
+          <span class="text-pvslate">&mdash; {{ string.modules_per_string }} &times; {{ string.module_type }}</span>
+          {% if string.combiner_identifier %}<span class="text-pvslate"> (combiner {{ string.combiner_identifier }})</span>{% endif %}
+        </div>
+        {% empty %}
+        <div class="pv-tree-node mt-1.5 pb-1 text-xs text-pvslate italic">No strings yet.</div>
+        {% endfor %}
+      </div>
+      {% empty %}
+      <div class="pv-tree-node mt-2 pb-1 text-xs text-pvslate italic">No DC circuits yet.</div>
+      {% endfor %}
+    </div>
+    {% empty %}
+    <p class="text-xs text-pvslate italic mt-2">No PCS units yet.</p>
+    {% endfor %}
+
+    {% if site.mv_circuits.all or site.substations.all %}
+    <div class="mt-4 pt-3 border-t border-pvline flex flex-wrap gap-x-6 gap-y-1 text-xs text-pvslate">
+      {% for mv in site.mv_circuits.all %}
+      <span class="font-mono-data">{{ mv.identifier }}{% if mv.substation %} &rarr; {{ mv.substation.name }}{% endif %}</span>
+      {% endfor %}
+      {% for sub in site.substations.all %}
+      <span>Substation: {{ sub.name }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="rounded-md border border-dashed border-pvline px-4 py-8 text-center text-sm text-pvslate">
+  No sites yet. <a href="{% url 'electrical:site_create' org_slug=organization.slug project_id=project.id %}" class="text-pvblue hover:underline">Add one</a> to start modeling.
+</div>
+{% endif %}
+{% endblock %}

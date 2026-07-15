@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Equipment library{% endblock %}
+{% block content %}
+<h1 class="font-display text-2xl font-semibold text-pvink mb-6">Equipment library</h1>
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+  <a href="{% url 'equipment:module_type_list' org_slug=organization.slug %}"
+     class="rounded-lg border border-pvline bg-white p-5 hover:border-pvblue transition-colors">
+    <div class="font-display font-semibold text-pvink mb-1">Modules</div>
+    <div class="text-2xl font-mono-data text-pvblue mb-1">{{ module_type_count }}</div>
+    <p class="text-xs text-pvslate">PV module datasheets</p>
+  </a>
+  <a href="{% url 'equipment:cable_type_list' org_slug=organization.slug %}"
+     class="rounded-lg border border-pvline bg-white p-5 hover:border-pvblue transition-colors">
+    <div class="font-display font-semibold text-pvink mb-1">Cables</div>
+    <div class="text-2xl font-mono-data text-pvblue mb-1">{{ cable_type_count }}</div>
+    <p class="text-xs text-pvslate">Conductor catalog entries</p>
+  </a>
+  <a href="{% url 'equipment:pcs_type_list' org_slug=organization.slug %}"
+     class="rounded-lg border border-pvline bg-white p-5 hover:border-pvblue transition-colors">
+    <div class="font-display font-semibold text-pvink mb-1">Inverters / PCS</div>
+    <div class="text-2xl font-mono-data text-pvblue mb-1">{{ pcs_type_count }}</div>
+    <p class="text-xs text-pvslate">Power conversion system datasheets</p>
+  </a>
+</div>
+{% endblock %}

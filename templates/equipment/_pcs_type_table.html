@@ -1,0 +1,37 @@
+{% if pcs_types %}
+<div class="rounded-lg border border-pvline bg-white overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-pvblueSoft text-pvblue text-xs uppercase tracking-wide">
+      <tr>
+        <th class="text-left px-4 py-2.5">Manufacturer</th>
+        <th class="text-left px-4 py-2.5">Model</th>
+        <th class="text-right px-4 py-2.5">Rating (kVA)</th>
+        <th class="text-right px-4 py-2.5">MPPTs</th>
+        <th class="text-right px-4 py-2.5">Efficiency (%)</th>
+        <th class="px-4 py-2.5"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-pvline">
+      {% for pcs_type in pcs_types %}
+      <tr>
+        <td class="px-4 py-2.5">{{ pcs_type.manufacturer }}</td>
+        <td class="px-4 py-2.5 font-medium">{{ pcs_type.model }}</td>
+        <td class="px-4 py-2.5 text-right font-mono-data">{{ pcs_type.power_rating_kva }}</td>
+        <td class="px-4 py-2.5 text-right font-mono-data">{{ pcs_type.num_mppt }}</td>
+        <td class="px-4 py-2.5 text-right font-mono-data">{{ pcs_type.efficiency_pct }}</td>
+        <td class="px-4 py-2.5 text-right whitespace-nowrap">
+          <a href="{% url 'equipment:pcs_type_edit' org_slug=organization.slug pk=pcs_type.id %}"
+             class="text-xs font-medium text-pvblue hover:underline">Edit</a>
+          <a href="{% url 'equipment:pcs_type_delete' org_slug=organization.slug pk=pcs_type.id %}"
+             class="ml-3 text-xs font-medium text-[#B3402A] hover:underline">Delete</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="rounded-md border border-dashed border-pvline px-4 py-8 text-center text-sm text-pvslate">
+  {% if query %}No PCS types match "{{ query }}".{% else %}No PCS types yet.{% endif %}
+</div>
+{% endif %}

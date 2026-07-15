@@ -1,0 +1,38 @@
+{% comment %}
+Usage: {% include "partials/form_fields.html" with form=form %}
+Renders every visible field of a Django form with label, widget, help
+text, and errors in a consistent style. Non-field errors (including
+pv_engine ERROR-level validation issues attached via add_error(None, ...))
+render at the top; pv_engine WARNING-level issues (form.pv_engine_warnings)
+render as a separate, non-blocking notice.
+{% endcomment %}
+{% if form.non_field_errors %}
+<div class="mb-4 rounded-md border border-red-200 bg-[#FBEAE6] px-4 py-3 text-sm text-[#B3402A]">
+  {% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
+</div>
+{% endif %}
+
+{% if form.pv_engine_warnings %}
+<div class="mb-4 rounded-md border border-[#EED9A8] bg-[#FBF1DC] px-4 py-3 text-sm text-[#93650F]">
+  <div class="font-medium mb-1">Worth double-checking:</div>
+  {% for warning in form.pv_engine_warnings %}<div>&bull; {{ warning }}</div>{% endfor %}
+</div>
+{% endif %}
+
+<div class="space-y-4">
+  {% for field in form.visible_fields %}
+  <div>
+    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-pvink mb-1">
+      {{ field.label }}{% if field.field.required %}<span class="text-[#B3402A]">*</span>{% endif %}
+    </label>
+    {{ field }}
+    {% if field.help_text %}
+    <p class="mt-1 text-xs text-pvslate">{{ field.help_text }}</p>
+    {% endif %}
+    {% if field.errors %}
+    <p class="mt-1 text-xs text-[#B3402A]">{{ field.errors|join:" " }}</p>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+</div>

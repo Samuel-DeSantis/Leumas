@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ pcs_instance_obj.identifier }}{% endblock %}
+{% block content %}
+<div class="text-xs text-pvslate mb-2">
+  <a href="{% url 'projects:detail' org_slug=organization.slug project_id=project.id %}" class="hover:underline">{{ project.name }}</a>
+  <span class="mx-1">/</span>
+  <a href="{% url 'electrical:site_detail' org_slug=organization.slug project_id=project.id site_id=site.id %}" class="hover:underline">{{ site.name }}</a>
+</div>
+<div class="flex items-start justify-between mb-2">
+  <div>
+    <h1 class="font-display text-2xl font-semibold text-pvink font-mono-data">{{ pcs_instance_obj.identifier }}</h1>
+    <p class="text-sm text-pvslate mt-1">{{ pcs_instance_obj.pcs_type }}</p>
+  </div>
+  {% if membership.can_edit %}
+  <div class="flex gap-2 shrink-0">
+    <a href="{% url 'electrical:pcs_instance_edit' org_slug=organization.slug project_id=project.id site_id=site.id pcs_id=pcs_instance_obj.id %}"
+       class="rounded-md border border-pvline px-3 py-1.5 text-xs font-medium text-pvink hover:bg-pvblueSoft">Edit</a>
+    <a href="{% url 'electrical:pcs_instance_delete' org_slug=organization.slug project_id=project.id site_id=site.id pcs_id=pcs_instance_obj.id %}"
+       class="rounded-md border border-pvline px-3 py-1.5 text-xs font-medium text-[#B3402A] hover:bg-[#FBEAE6]">Delete</a>
+  </div>
+  {% endif %}
+</div>
+
+<div class="flex items-center justify-between mt-6 mb-3">
+  <h2 class="font-display text-lg font-semibold text-pvink">DC circuits</h2>
+  {% if membership.can_edit %}
+  <a href="{% url 'electrical:dc_circuit_create' org_slug=organization.slug project_id=project.id site_id=site.id pcs_id=pcs_instance_obj.id %}"
+     class="text-sm font-medium text-pvblue hover:underline">+ Add DC circuit</a>
+  {% endif %}
+</div>
+{% if dc_circuits %}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  {% for dc in dc_circuits %}
+  <a href="{% url 'electrical:dc_circuit_detail' org_slug=organization.slug project_id=project.id site_id=site.id pcs_id=pcs_instance_obj.id dc_id=dc.id %}"
+     class="rounded-lg border border-pvline bg-white p-4 hover:border-pvblue transition-colors">
+    <div class="font-mono-data font-medium text-pvink">{{ dc.identifier }}</div>
+    <div class="text-xs text-pvslate mt-1">{{ dc.strings.count }} string{{ dc.strings.count|pluralize }}</div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="rounded-md border border-dashed border-pvline px-4 py-6 text-center text-sm text-pvslate">
+  No DC circuits yet.
+</div>
+{% endif %}
+{% endblock %}

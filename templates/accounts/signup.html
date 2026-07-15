@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Create account{% endblock %}
+{% block content %}
+<div class="max-w-sm mx-auto mt-16">
+  <h1 class="font-display text-2xl font-semibold text-pvblue mb-1">Create your account</h1>
+  <p class="text-sm text-pvslate mb-8">Start modeling PV plants in minutes.</p>
+  <form method="post">
+    {% csrf_token %}
+    {% include "partials/form_fields.html" with form=form %}
+    <button type="submit" class="mt-6 w-full rounded-md bg-pvblue px-4 py-2.5 text-sm font-medium text-white hover:bg-[#16324A]">
+      Create account
+    </button>
+  </form>
+  <p class="mt-6 text-sm text-pvslate">
+    Already have an account? <a href="{% url 'accounts:login' %}" class="text-pvblue font-medium hover:underline">Sign in</a>
+  </p>
+</div>
+{% endblock %}

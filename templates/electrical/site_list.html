@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Sites &middot; {{ project.name }}{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <h1 class="font-display text-2xl font-semibold text-pvink">Sites &middot; {{ project.name }}</h1>
+  {% if membership.can_edit %}
+  <a href="{% url 'electrical:site_create' org_slug=organization.slug project_id=project.id %}"
+     class="rounded-md bg-pvblue px-4 py-2 text-sm font-medium text-white hover:bg-[#16324A]">+ Add site</a>
+  {% endif %}
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  {% for site in sites %}
+  <a href="{% url 'electrical:site_detail' org_slug=organization.slug project_id=project.id site_id=site.id %}"
+     class="rounded-lg border border-pvline bg-white p-5 hover:border-pvblue transition-colors">
+    <div class="font-display font-semibold text-pvink">{{ site.name }}</div>
+  </a>
+  {% empty %}
+  <div class="rounded-md border border-dashed border-pvline px-4 py-8 text-center text-sm text-pvslate sm:col-span-2">
+    No sites yet.
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

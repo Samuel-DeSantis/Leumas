@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}{{ site_obj.name }}{% endblock %}
+{% block content %}
+<div class="text-xs text-pvslate mb-2">
+  <a href="{% url 'projects:detail' org_slug=organization.slug project_id=project.id %}" class="hover:underline">{{ project.name }}</a>
+  <span class="mx-1">/</span> Sites
+</div>
+<div class="flex items-start justify-between mb-6">
+  <h1 class="font-display text-2xl font-semibold text-pvink">{{ site_obj.name }}</h1>
+  {% if membership.can_edit %}
+  <div class="flex gap-2 shrink-0">
+    <a href="{% url 'electrical:site_edit' org_slug=organization.slug project_id=project.id site_id=site_obj.id %}"
+       class="rounded-md border border-pvline px-3 py-1.5 text-xs font-medium text-pvink hover:bg-pvblueSoft">Edit</a>
+    <a href="{% url 'electrical:site_delete' org_slug=organization.slug project_id=project.id site_id=site_obj.id %}"
+       class="rounded-md border border-pvline px-3 py-1.5 text-xs font-medium text-[#B3402A] hover:bg-[#FBEAE6]">Delete</a>
+  </div>
+  {% endif %}
+</div>
+
+<div class="flex items-center justify-between mb-3">
+  <h2 class="font-display text-lg font-semibold text-pvink">PCS units</h2>
+  {% if membership.can_edit %}
+  <a href="{% url 'electrical:pcs_instance_create' org_slug=organization.slug project_id=project.id site_id=site_obj.id %}"
+     class="text-sm font-medium text-pvblue hover:underline">+ Add PCS</a>
+  {% endif %}
+</div>
+{% if pcs_instances %}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+  {% for pcs in pcs_instances %}
+  <a href="{% url 'electrical:pcs_instance_detail' org_slug=organization.slug project_id=project.id site_id=site_obj.id pcs_id=pcs.id %}"
+     class="rounded-lg border border-pvline bg-white p-4 hover:border-pvblue transition-colors">
+    <div class="font-mono-data font-medium text-pvink">{{ pcs.identifier }}</div>
+    <div class="text-xs text-pvslate mt-1">{{ pcs.pcs_type }}</div>
+    <div class="text-xs text-pvslate mt-1">{{ pcs.dc_circuits.count }} DC circuit{{ pcs.dc_circuits.count|pluralize }}</div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="rounded-md border border-dashed border-pvline px-4 py-6 text-center text-sm text-pvslate mb-8">
+  No PCS units placed yet.
+</div>
+{% endif %}
+
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+  <div>
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="font-display text-lg font-semibold text-pvink">Substations</h2>
+      {% if membership.can_edit %}
+      <a href="{% url 'electrical:substation_create' org_slug=organization.slug project_id=project.id site_id=site_obj.id %}"
+         class="text-sm font-medium text-pvblue hover:underline">+ Add</a>
+      {% endif %}
+    </div>
+    {% if substations %}
+    <ul class="space-y-2">
+      {% for sub in substations %}
+      <li class="flex items-center justify-between rounded-md border border-pvline bg-white px-3 py-2 text-sm">
+        <span>{{ sub.name }}</span>
+        {% if membership.can_edit %}
+        <form method="post" action="{% url 'electrical:substation_delete' org_slug=organization.slug project_id=project.id site_id=site_obj.id substation_id=sub.id %}">
+          {% csrf_token %}
+          <button type="submit" class="text-xs font-medium text-[#B3402A] hover:underline">Delete</button>
+        </form>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="rounded-md border border-dashed border-pvline px-3 py-4 text-center text-xs text-pvslate">None yet.</div>
+    {% endif %}
+  </div>
+
+  <div>
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="font-display text-lg font-semibold text-pvink">MV circuits</h2>
+      {% if membership.can_edit %}
+      <a href="{% url 'electrical:mv_circuit_create' org_slug=organization.slug project_id=project.id site_id=site_obj.id %}"
+         class="text-sm font-medium text-pvblue hover:underline">+ Add</a>
+      {% endif %}
+    </div>
+    {% if mv_circuits %}
+    <ul class="space-y-2">
+      {% for mv in mv_circuits %}
+      <li class="flex items-center justify-between rounded-md border border-pvline bg-white px-3 py-2 text-sm">
+        <div>
+          <span class="font-mono-data">{{ mv.identifier }}</span>
+          {% if mv.substation %}<span class="text-xs text-pvslate">&rarr; {{ mv.substation.name }}</span>{% endif %}
+        </div>
+        {% if membership.can_edit %}
+        <div class="flex gap-2">
+          <a href="{% url 'electrical:mv_circuit_edit' org_slug=organization.slug project_id=project.id site_id=site_obj.id mv_circuit_id=mv.id %}"
+             class="text-xs font-medium text-pvblue hover:underline">Edit</a>
+          <form method="post" action="{% url 'electrical:mv_circuit_delete' org_slug=organization.slug project_id=project.id site_id=site_obj.id mv_circuit_id=mv.id %}">
+            {% csrf_token %}
+            <button type="submit" class="text-xs font-medium text-[#B3402A] hover:underline">Delete</button>
+          </form>
+        </div>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="rounded-md border border-dashed border-pvline px-3 py-4 text-center text-xs text-pvslate">None yet.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

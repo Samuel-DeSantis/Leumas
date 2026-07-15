@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Delete {{ object }}{% endblock %}
+{% block content %}
+<div class="max-w-md">
+  <h1 class="font-display text-xl font-semibold text-pvink mb-2">Delete "{{ object }}"?</h1>
+  <p class="text-sm text-pvslate mb-6">This can't be undone. Anything nested underneath it will be removed too.</p>
+  <form method="post">
+    {% csrf_token %}
+    <div class="flex gap-3">
+      <button type="submit" class="rounded-md bg-[#B3402A] px-4 py-2 text-sm font-medium text-white hover:bg-[#96331F]">
+        Delete
+      </button>
+      <a href="javascript:history.back()" class="rounded-md border border-pvline px-4 py-2 text-sm font-medium text-pvink hover:bg-pvblueSoft">
+        Cancel
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

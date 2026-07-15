@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Members \u00b7 {{ organization.name }}{% endblock %}
+{% block content %}
+<h1 class="font-display text-2xl font-semibold text-pvink mb-6">Members</h1>
+
+<div class="rounded-lg border border-pvline bg-white overflow-hidden mb-8">
+  <table class="w-full text-sm">
+    <thead class="bg-pvblueSoft text-pvblue text-xs uppercase tracking-wide">
+      <tr>
+        <th class="text-left px-4 py-2.5">Email</th>
+        <th class="text-left px-4 py-2.5">Name</th>
+        <th class="text-left px-4 py-2.5">Role</th>
+        {% if membership.can_manage_members %}<th class="px-4 py-2.5"></th>{% endif %}
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-pvline">
+      {% for m in members %}
+      <tr>
+        <td class="px-4 py-2.5">{{ m.user.email }}</td>
+        <td class="px-4 py-2.5">{{ m.user.get_full_name|default:"\u2014" }}</td>
+        <td class="px-4 py-2.5"><span class="pv-badge bg-pvblueSoft text-pvblue">{{ m.get_role_display }}</span></td>
+        {% if membership.can_manage_members %}
+        <td class="px-4 py-2.5 text-right">
+          {% if m.role != "owner" or members|length > 1 %}
+          <form method="post" action="{% url 'organizations:remove_member' org_slug=organization.slug membership_id=m.id %}"
+                onsubmit="return confirm('Remove {{ m.user.email }} from this organization?');">
+            {% csrf_token %}
+            <button type="submit" class="text-xs font-medium text-[#B3402A] hover:underline">Remove</button>
+          </form>
+          {% endif %}
+        </td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if membership.can_manage_members %}
+<div class="max-w-sm">
+  <h2 class="font-display text-lg font-semibold text-pvink mb-3">Add a member</h2>
+  <form method="post" action="{% url 'organizations:add_member' org_slug=organization.slug %}">
+    {% csrf_token %}
+    {% include "partials/form_fields.html" with form=add_member_form %}
+    <button type="submit" class="mt-4 rounded-md bg-pvblue px-4 py-2 text-sm font-medium text-white hover:bg-[#16324A]">
+      Add member
+    </button>
+  </form>
+</div>
+{% endif %}
+{% endblock %}

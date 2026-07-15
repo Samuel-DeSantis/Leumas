@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Modules{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-4">
+  <h1 class="font-display text-2xl font-semibold text-pvink">Modules</h1>
+  {% if membership.can_edit %}
+  <a href="{% url 'equipment:module_type_create' org_slug=organization.slug %}"
+     class="rounded-md bg-pvblue px-4 py-2 text-sm font-medium text-white hover:bg-[#16324A]">+ Add module type</a>
+  {% endif %}
+</div>
+
+<input type="search" name="q" value="{{ query }}" placeholder="Search manufacturer or model&hellip;"
+       class="mb-4 block w-full max-w-sm rounded-md border border-pvline bg-white px-3 py-2 text-sm focus:border-pvblue focus:outline-none focus:ring-1 focus:ring-pvblue"
+       hx-get="{% url 'equipment:module_type_list' org_slug=organization.slug %}"
+       hx-trigger="keyup changed delay:300ms, search"
+       hx-target="#module-type-table"
+       hx-swap="innerHTML">
+
+<div id="module-type-table">
+  {% include "equipment/_module_type_table.html" %}
+</div>
+{% endblock %}

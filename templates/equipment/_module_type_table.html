@@ -1,0 +1,39 @@
+{% if module_types %}
+<div class="rounded-lg border border-pvline bg-white overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-pvblueSoft text-pvblue text-xs uppercase tracking-wide">
+      <tr>
+        <th class="text-left px-4 py-2.5">Manufacturer</th>
+        <th class="text-left px-4 py-2.5">Model</th>
+        <th class="text-right px-4 py-2.5">Pmax (W)</th>
+        <th class="text-right px-4 py-2.5">Vmpp (V)</th>
+        <th class="text-right px-4 py-2.5">Voc (V)</th>
+        <th class="text-right px-4 py-2.5">Isc (A)</th>
+        <th class="px-4 py-2.5"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-pvline">
+      {% for module_type in module_types %}
+      <tr>
+        <td class="px-4 py-2.5">{{ module_type.manufacturer }}</td>
+        <td class="px-4 py-2.5 font-medium">{{ module_type.model }}</td>
+        <td class="px-4 py-2.5 text-right font-mono-data">{{ module_type.pmax_w }}</td>
+        <td class="px-4 py-2.5 text-right font-mono-data">{{ module_type.vmpp_v }}</td>
+        <td class="px-4 py-2.5 text-right font-mono-data">{{ module_type.voc_v }}</td>
+        <td class="px-4 py-2.5 text-right font-mono-data">{{ module_type.isc_a }}</td>
+        <td class="px-4 py-2.5 text-right whitespace-nowrap">
+          <a href="{% url 'equipment:module_type_edit' org_slug=organization.slug pk=module_type.id %}"
+             class="text-xs font-medium text-pvblue hover:underline">Edit</a>
+          <a href="{% url 'equipment:module_type_delete' org_slug=organization.slug pk=module_type.id %}"
+             class="ml-3 text-xs font-medium text-[#B3402A] hover:underline">Delete</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="rounded-md border border-dashed border-pvline px-4 py-8 text-center text-sm text-pvslate">
+  {% if query %}No module types match "{{ query }}".{% else %}No module types yet.{% endif %}
+</div>
+{% endif %}

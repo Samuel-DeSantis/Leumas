@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Projects{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <h1 class="font-display text-2xl font-semibold text-pvink">Projects</h1>
+  {% if membership.can_edit %}
+  <a href="{% url 'projects:create' org_slug=organization.slug %}"
+     class="rounded-md bg-pvblue px-4 py-2 text-sm font-medium text-white hover:bg-[#16324A]">
+    + New project
+  </a>
+  {% endif %}
+</div>
+
+{% if projects %}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  {% for project in projects %}
+  <a href="{% url 'projects:detail' org_slug=organization.slug project_id=project.id %}"
+     class="rounded-lg border border-pvline bg-white p-5 hover:border-pvblue transition-colors">
+    <div class="font-display font-semibold text-pvink mb-1">{{ project.name }}</div>
+    {% if project.location %}<div class="text-xs text-pvslate mb-2">{{ project.location }}</div>{% endif %}
+    {% if project.ac_nameplate_capacity_kw %}
+    <div class="text-xs font-mono-data text-pvslate">{{ project.ac_nameplate_capacity_kw }} kW AC</div>
+    {% endif %}
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="rounded-md border border-dashed border-pvline px-4 py-10 text-center text-sm text-pvslate">
+  No projects yet. Create one to start modeling a plant.
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ organization.name }}{% endblock %}
+{% block content %}
+<div class="mb-8">
+  <h1 class="font-display text-2xl font-semibold text-pvink">{{ organization.name }}</h1>
+  <p class="text-sm text-pvslate mt-1">Your role: <span class="font-medium text-pvink">{{ membership.get_role_display }}</span></p>
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+  <a href="{% url 'projects:list' org_slug=organization.slug %}"
+     class="rounded-lg border border-pvline bg-white p-5 hover:border-pvblue transition-colors">
+    <div class="font-display font-semibold text-pvink mb-1">Projects</div>
+    <p class="text-sm text-pvslate">Create and model utility-scale PV projects.</p>
+  </a>
+  <a href="{% url 'equipment:home' org_slug=organization.slug %}"
+     class="rounded-lg border border-pvline bg-white p-5 hover:border-pvblue transition-colors">
+    <div class="font-display font-semibold text-pvink mb-1">Equipment library</div>
+    <p class="text-sm text-pvslate">Manage modules, cables, and PCS/inverter datasheets.</p>
+  </a>
+  <a href="{% url 'organizations:members' org_slug=organization.slug %}"
+     class="rounded-lg border border-pvline bg-white p-5 hover:border-pvblue transition-colors">
+    <div class="font-display font-semibold text-pvink mb-1">Members</div>
+    <p class="text-sm text-pvslate">See who has access and manage roles.</p>
+  </a>
+</div>
+{% endblock %}

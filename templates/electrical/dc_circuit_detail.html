@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}{{ dc_circuit_obj.identifier }}{% endblock %}
+{% block content %}
+<div class="text-xs text-pvslate mb-2">
+  <a href="{% url 'projects:detail' org_slug=organization.slug project_id=project.id %}" class="hover:underline">{{ project.name }}</a>
+  <span class="mx-1">/</span>
+  <a href="{% url 'electrical:site_detail' org_slug=organization.slug project_id=project.id site_id=site.id %}" class="hover:underline">{{ site.name }}</a>
+  <span class="mx-1">/</span>
+  <a href="{% url 'electrical:pcs_instance_detail' org_slug=organization.slug project_id=project.id site_id=site.id pcs_id=pcs_instance.id %}" class="hover:underline">{{ pcs_instance.identifier }}</a>
+</div>
+<div class="flex items-start justify-between mb-6">
+  <h1 class="font-display text-2xl font-semibold text-pvink font-mono-data">{{ dc_circuit_obj.identifier }}</h1>
+  {% if membership.can_edit %}
+  <div class="flex gap-2 shrink-0">
+    <a href="{% url 'electrical:dc_circuit_edit' org_slug=organization.slug project_id=project.id site_id=site.id pcs_id=pcs_instance.id dc_id=dc_circuit_obj.id %}"
+       class="rounded-md border border-pvline px-3 py-1.5 text-xs font-medium text-pvink hover:bg-pvblueSoft">Edit</a>
+    <a href="{% url 'electrical:dc_circuit_delete' org_slug=organization.slug project_id=project.id site_id=site.id pcs_id=pcs_instance.id dc_id=dc_circuit_obj.id %}"
+       class="rounded-md border border-pvline px-3 py-1.5 text-xs font-medium text-[#B3402A] hover:bg-[#FBEAE6]">Delete</a>
+  </div>
+  {% endif %}
+</div>
+
+<div class="flex items-center justify-between mb-3">
+  <h2 class="font-display text-lg font-semibold text-pvink">Strings</h2>
+  {% if membership.can_edit %}
+  <a href="{% url 'electrical:string_create' org_slug=organization.slug project_id=project.id site_id=site.id pcs_id=pcs_instance.id dc_id=dc_circuit_obj.id %}"
+     class="text-sm font-medium text-pvblue hover:underline">+ Add string</a>
+  {% endif %}
+</div>
+
+{% if strings %}
+<div class="rounded-lg border border-pvline bg-white overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-pvblueSoft text-pvblue text-xs uppercase tracking-wide">
+      <tr>
+        <th class="text-left px-4 py-2.5">Identifier</th>
+        <th class="text-left px-4 py-2.5">Module type</th>
+        <th class="text-right px-4 py-2.5">Modules/string</th>
+        <th class="text-left px-4 py-2.5">Combiner</th>
+        {% if membership.can_edit %}<th class="px-4 py-2.5"></th>{% endif %}
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-pvline">
+      {% for string in strings %}
+      <tr>
+        <td class="px-4 py-2.5 font-mono-data font-medium">{{ string.identifier }}</td>
+        <td class="px-4 py-2.5">{{ string.module_type }}</td>
+        <td class="px-4 py-2.5 text-right font-mono-data">{{ string.modules_per_string }}</td>
+        <td class="px-4 py-2.5 text-pvslate">{{ string.combiner_identifier|default:"&mdash;" }}</td>
+        {% if membership.can_edit %}
+        <td class="px-4 py-2.5 text-right whitespace-nowrap">
+          <a href="{% url 'electrical:string_edit' org_slug=organization.slug project_id=project.id site_id=site.id pcs_id=pcs_instance.id dc_id=dc_circuit_obj.id string_id=string.id %}"
+             class="text-xs font-medium text-pvblue hover:underline">Edit</a>
+          <a href="{% url 'electrical:string_delete' org_slug=organization.slug project_id=project.id site_id=site.id pcs_id=pcs_instance.id dc_id=dc_circuit_obj.id string_id=string.id %}"
+             class="ml-3 text-xs font-medium text-[#B3402A] hover:underline">Delete</a>
+        </td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="rounded-md border border-dashed border-pvline px-4 py-8 text-center text-sm text-pvslate">
+  No strings yet.
+</div>
+{% endif %}
+{% endblock %}

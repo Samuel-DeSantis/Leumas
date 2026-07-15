@@ -1,0 +1,103 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}PV Engineering Platform{% endblock %}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pvbg: '#F5F7FA',
+            pvink: '#101826',
+            pvslate: '#47566B',
+            pvline: '#DCE3EC',
+            pvaccent: '#D9A62E',
+            pvblue: '#1C3D5A',
+            pvblueSoft: '#E8EFF5',
+          },
+          fontFamily: {
+            display: ['"Space Grotesk"', 'Inter', 'sans-serif'],
+            sans: ['Inter', 'ui-sans-serif', 'sans-serif'],
+            mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.12/htmx.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.1/cdn.min.js" defer></script>
+  <script>
+    document.addEventListener('htmx:configRequest', (event) => {
+      event.detail.headers['X-CSRFToken'] = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('csrftoken='))
+        ?.split('=')[1];
+    });
+  </script>
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="h-full bg-pvbg text-pvink antialiased">
+  <div class="min-h-full flex">
+    {% if user.is_authenticated and current_organization %}
+    <aside class="w-60 shrink-0 border-r border-pvline bg-white flex flex-col">
+      <div class="px-5 py-5 border-b border-pvline">
+        <a href="{% url 'organizations:select' %}" class="font-display font-semibold text-pvblue text-sm tracking-tight">PV ENGINEERING</a>
+        <div class="mt-2 text-xs text-pvslate truncate" title="{{ current_organization.name }}">{{ current_organization.name }}</div>
+      </div>
+      <nav class="flex-1 px-3 py-4 space-y-1 text-sm">
+        <a href="{% url 'organizations:dashboard' org_slug=current_organization.slug %}"
+           class="block px-3 py-2 rounded-md text-pvink hover:bg-pvblueSoft">Overview</a>
+        <a href="{% url 'projects:list' org_slug=current_organization.slug %}"
+           class="block px-3 py-2 rounded-md text-pvink hover:bg-pvblueSoft">Projects</a>
+        <a href="{% url 'equipment:home' org_slug=current_organization.slug %}"
+           class="block px-3 py-2 rounded-md text-pvink hover:bg-pvblueSoft">Equipment library</a>
+        <a href="{% url 'organizations:members' org_slug=current_organization.slug %}"
+           class="block px-3 py-2 rounded-md text-pvink hover:bg-pvblueSoft">Members</a>
+      </nav>
+      <div class="px-3 py-4 border-t border-pvline text-sm">
+        <a href="{% url 'organizations:select' %}" class="block px-3 py-2 rounded-md text-pvslate hover:bg-pvblueSoft">Switch organization</a>
+        <form method="post" action="{% url 'accounts:logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="w-full text-left px-3 py-2 rounded-md text-pvslate hover:bg-pvblueSoft">Sign out</button>
+        </form>
+      </div>
+    </aside>
+    {% endif %}
+
+    <div class="flex-1 flex flex-col min-w-0">
+      {% if user.is_authenticated and not current_organization %}
+      <header class="border-b border-pvline bg-white px-6 py-4 flex items-center justify-between">
+        <a href="{% url 'organizations:select' %}" class="font-display font-semibold text-pvblue tracking-tight">PV ENGINEERING</a>
+        <form method="post" action="{% url 'accounts:logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="text-sm text-pvslate hover:text-pvink">Sign out</button>
+        </form>
+      </header>
+      {% endif %}
+
+      <main class="flex-1 px-6 py-8 max-w-6xl w-full mx-auto">
+        {% if messages %}
+        <div class="mb-6 space-y-2">
+          {% for message in messages %}
+          <div class="rounded-md border px-4 py-2.5 text-sm {% if message.tags == 'error' %}border-red-200 bg-[#FBEAE6] text-[#B3402A]{% else %}border-green-200 bg-green-50 text-green-800{% endif %}">
+            {{ message }}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+</body>
+</html>

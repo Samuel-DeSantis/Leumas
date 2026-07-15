@@ -1,0 +1,71 @@
+/* PV Engineering Platform - design tokens & small utilities that Tailwind's
+   CDN build (no config file) can't express on its own. Palette is a
+   "blueprint paper" theme: cool paper background, ink-navy text, a
+   solar-amber accent used sparingly for actions and status. */
+
+:root {
+  --pv-bg: #F5F7FA;
+  --pv-surface: #FFFFFF;
+  --pv-ink: #101826;
+  --pv-slate: #47566B;
+  --pv-slate-soft: #8593A6;
+  --pv-line: #DCE3EC;
+  --pv-accent: #D9A62E;
+  --pv-accent-ink: #7A5A0E;
+  --pv-blue: #1C3D5A;
+  --pv-blue-soft: #E8EFF5;
+  --pv-error: #B3402A;
+  --pv-error-soft: #FBEAE6;
+  --pv-warn: #93650F;
+  --pv-warn-soft: #FBF1DC;
+}
+
+body {
+  background-color: var(--pv-bg);
+  color: var(--pv-ink);
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: 'Space Grotesk', 'Inter', ui-sans-serif, sans-serif;
+}
+
+.font-mono-data {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hierarchy tree connector lines: a light structural signature for the
+   electrical hierarchy view rather than a generic bullet/indent list. */
+.pv-tree {
+  position: relative;
+}
+.pv-tree-node {
+  position: relative;
+  padding-left: 1.5rem;
+  border-left: 1px solid var(--pv-line);
+}
+.pv-tree-node:last-child {
+  border-left-color: transparent;
+}
+.pv-tree-node::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1.1rem;
+  width: 1.1rem;
+  height: 1px;
+  background: var(--pv-line);
+}
+
+.pv-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 9999px;
+  padding: 0.1rem 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
